@@ -1,16 +1,36 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 import Home from "./components/Home/index.jsx";
 import Register from "./components/Auth/Register/index.jsx";
 import Login from "./components/Auth/Login/index.jsx";
 import Profile from "./components/Profile/index.jsx";
 import Chat from "./components/Chat/index.jsx";
+import { getProfile } from "./api/auth.jsx";
 import "./App.css";
 
 function ProtectedRoute({ children }) {
-  const token = typeof window !== "undefined" ? window.localStorage.getItem("auth_token") : null;
+  const [state, setState] = useState("loading");
   const location = useLocation();
-  if (!token) {
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        await getProfile();
+        if (!cancelled) setState("authed");
+      } catch (e) {
+        if (!cancelled) setState("guest");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (state === "loading") {
+    return <div>Загрузка...</div>;
+  }
+  if (state !== "authed") {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
   return children;
