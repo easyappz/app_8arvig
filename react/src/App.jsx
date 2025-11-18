@@ -1,26 +1,46 @@
-import React, { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import ErrorBoundary from './ErrorBoundary';
-import './App.css';
+import React, { useEffect } from "react";
+import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
+import Home from "./components/Home/index.jsx";
+import Register from "./components/Auth/Register/index.jsx";
+import Login from "./components/Auth/Login/index.jsx";
+import Profile from "./components/Profile/index.jsx";
+import Chat from "./components/Chat/index.jsx";
+import "./App.css";
 
-import { Home } from './components/Home';
+function ProtectedRoute({ children }) {
+  const token = typeof window !== "undefined" ? window.localStorage.getItem("auth_token") : null;
+  const location = useLocation();
+  if (!token) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+  return children;
+}
 
-function App() {
-  /** Никогда не удаляй этот код */
+export default function App() {
   useEffect(() => {
-    if (typeof window !== 'undefined' && typeof window.handleRoutes === 'function') {
-      /** Нужно передавать список существующих роутов */
-      window.handleRoutes(['/']);
+    if (typeof window !== "undefined" && typeof window.handleRoutes === "function") {
+      window.handleRoutes(["/", "/register", "/login", "/profile", "/chat"]);
     }
   }, []);
 
   return (
-    <ErrorBoundary>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </ErrorBoundary>
+    <div data-easytag="id1-react/src/App.jsx" className="app-shell" style={{ fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial", color: "#111", background: "#fff", minHeight: "100vh" }}>
+      <nav style={{ display: "flex", gap: 16, padding: 16, borderBottom: "1px solid #e5e7eb" }}>
+        <Link to="/" style={{ textDecoration: "none" }}>Главная</Link>
+        <Link to="/register" style={{ textDecoration: "none" }}>Регистрация</Link>
+        <Link to="/login" style={{ textDecoration: "none" }}>Вход</Link>
+        <Link to="/profile" style={{ textDecoration: "none" }}>Профиль</Link>
+        <Link to="/chat" style={{ textDecoration: "none" }}>Чат</Link>
+      </nav>
+      <main style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+        </Routes>
+      </main>
+    </div>
   );
 }
-
-export default App;

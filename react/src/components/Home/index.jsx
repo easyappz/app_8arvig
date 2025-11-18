@@ -1,12 +1,17 @@
-import React from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
 
-/**
- * Для ИИ: Это заглушка. Обнови этот компонент. Здесь должен быть начальный экран приложения.
- */
-export const Home = () => {
+export default function Home() {
   return (
-    <div>
-      <div>This is home page</div>
+    <div data-easytag="id6-react/src/components/Home/index.jsx" style={{ display: "grid", gap: 12 }}>
+      <h1>Главная</h1>
+      <p>Добро пожаловать! Используйте ссылки ниже для навигации.</p>
+      <nav style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <Link to="/register">Регистрация</Link>
+        <Link to="/login">Вход</Link>
+        <Link to="/profile">Профиль</Link>
+        <Link to="/chat">Чат</Link>
+      </nav>
     </div>
   );
-};
+}
